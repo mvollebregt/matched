@@ -1,9 +1,9 @@
-import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {PreloadAllModules, RouterModule, Routes} from '@angular/router';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
-  { path: 'home', loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)},
+  { path: '', redirectTo: 'events', pathMatch: 'full' },
+  { path: 'events', loadChildren: () => import('./event-overview/event-overview.module').then(m => m.EventOverviewModule)},
 ];
 
 @NgModule({
