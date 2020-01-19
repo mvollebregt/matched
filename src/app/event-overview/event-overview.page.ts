@@ -12,7 +12,7 @@ export class EventOverviewPage {
   events: Observable<Event[]>;
 
   constructor(eventService: EventService) {
-    this.events = eventService.getEvents();
+    this.events = eventService.getFollowingEvents();
   }
 
 }
