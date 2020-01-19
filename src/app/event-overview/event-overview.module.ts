@@ -6,6 +6,7 @@ import {RouterModule} from '@angular/router';
 
 import {EventListComponent} from './event-list/event-list.component';
 import {EventOverviewPage} from './event-overview.page';
+import {canActivate, redirectUnauthorizedTo} from '@angular/fire/auth-guard';
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import {EventOverviewPage} from './event-overview.page';
     RouterModule.forChild([
       {
         path: '',
-        component: EventOverviewPage
+        component: EventOverviewPage,
+        ...canActivate(redirectUnauthorizedTo(['login']))
       }
     ])
   ],
