@@ -12,9 +12,8 @@ service cloud.firestore {
     }
 
     function isOtherUserGrantedBy(userId) {
-      let user = get(/databases/$(database)/documents/users/$(userId)).data;
-    	return user.public == true ||
-             request.auth.uid in user.grantedUserIds;
+    	return exists(/databases/$(database)/documents/users/$(userId)/grants/public) ||
+             exists(/databases/$(database)/documents/users/$(userId)/grants/$(request.auth.uid))
     }
 
     function isGrantedBy(userId) {
@@ -23,6 +22,16 @@ service cloud.firestore {
 
     match /events/{eventId} {
       allow read: if isLoggedIn()
+    }
+
+    match /users/{userId}/grants/public {
+    	allow read: if isLoggedIn()
+      allow write: if isUser(userId)
+    }
+
+    match /users/{userId}/grants/{grantedUserId} {
+    	allow read: if isGrantedBy(userId) || isUser(grantedUserId)
+      allow write: if isUser(userId)
     }
 
     match /users/{userId}/{anyUserFile=**} {
