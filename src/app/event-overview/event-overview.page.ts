@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {Observable} from 'rxjs';
 import {Event} from '../shared/model/event';
-import {EventService} from '../shared/event.service';
+import {EventService} from '../shared/services/event.service';
 
 @Component({
   selector: 'mt-event-overview',
