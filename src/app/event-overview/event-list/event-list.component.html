@@ -3,6 +3,6 @@
     <ion-avatar slot="start">
       <img src="">
     </ion-avatar>
-    <ion-label>{{event.name}}</ion-label>
+    <ion-label>{{event.name}} <span *ngFor="let userId of event.participatingUserIds">{{userId}}</span></ion-label>
   </ion-item>
 </ion-list>
