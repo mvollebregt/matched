@@ -5,7 +5,7 @@ import {Event} from './model/event';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {map, switchMap} from 'rxjs/operators';
 import {Participation} from './model/participation';
-import {Following} from './model/following';
+import {User} from './model/user';
 
 @Injectable({
   providedIn: 'root'
@@ -32,16 +32,18 @@ export class EventService {
   }
 
   private getFollowedUserIdsForUserId(userId: string): Observable<string[]> {
-    return this.db.collection<Following>(`users/${userId}/following`).valueChanges().pipe(
-      map(followings => [userId, ...followings.map(following => following.targetId)])
+    return this.db.doc<User>(`users/${userId}`).valueChanges().pipe(
+      map(user => [userId, ...(user && user.followingUserIds || [])])
     );
   }
 
   private getParticipationsForUserIds(userIds: string[]): Observable<Participation[]> {
-    return this.db.collection<Participation>('participations', ref =>
-      ref.where('userId', 'in', userIds)).valueChanges();
+    return zip(
+      ...userIds.map(userId => this.db.collection<Participation>(`users/${userId}/participations`).valueChanges())
+    ).pipe(
+      map(participations => [].concat(...participations))
+    );
   }
-
   private getEventsForParticipations(participations: Participation[]): Observable<Event[]> {
     return zip(...this.partitionedByEvent(participations).map(eventIdWithParticipations => this.getEvent(eventIdWithParticipations)));
   }

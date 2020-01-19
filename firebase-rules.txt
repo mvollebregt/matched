@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+
+  match /databases/{database}/documents {
+
+  	function isLoggedIn() {
+    	return request.auth != null;
+    }
+
+    function isUser(userId) {
+      return request.auth.uid == userId;
+    }
+
+    function isOtherUserGrantedBy(userId) {
+      let user = get(/databases/$(database)/documents/users/$(userId)).data;
+    	return user.public == true ||
+             request.auth.uid in user.grantedUserIds;
+    }
+
+    function isGrantedBy(userId) {
+    	return isUser(userId) || isOtherUserGrantedBy(userId);
+    }
+
+    match /events/{eventId} {
+      allow read: if isLoggedIn()
+    }
+
+    match /users/{userId}/{anyUserFile=**} {
+    	allow read: if isGrantedBy(userId)
+    	allow write: if isUser(userId)
+    }
+  }
+}
