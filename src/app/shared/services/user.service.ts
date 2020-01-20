@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {AngularFirestore} from '@angular/fire/firestore';
-import {Observable, of, zip} from 'rxjs';
+import {combineLatest, Observable, of} from 'rxjs';
 import {User} from '../model/user';
 import {map, switchMap} from 'rxjs/operators';
 import {AuthService} from './auth.service';
@@ -32,7 +32,7 @@ export class UserService {
   }
 
   private filterUserIdsByGrantedUserIds(userId: string, followsUserIds: string[]): Observable<string[]> {
-    return zip(...followsUserIds.map(followsUserId => this.hasGranted(followsUserId, userId).pipe(
+    return combineLatest(followsUserIds.map(followsUserId => this.hasGranted(followsUserId, userId).pipe(
       map(granted => granted ? [followsUserId] : [])
     ))).pipe(
       map(userIds => [].concat(...userIds))

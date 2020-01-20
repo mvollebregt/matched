@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {AngularFirestore} from '@angular/fire/firestore';
-import {Observable, zip} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {Event} from '../model/event';
 import {map, switchMap} from 'rxjs/operators';
 import {Participation} from '../model/participation';
@@ -24,7 +24,7 @@ export class EventService {
   }
 
   private getEventIdsWithParticipatingUserIds(userIds: string[]): Observable<[string, string[]][]> {
-    return zip(...userIds.map(userId => this.getParticipations(userId))).pipe(
+    return combineLatest(userIds.map(userId => this.getParticipations(userId))).pipe(
       map(userIdsWithParticipations => this.getEventIdsWithUserIds(userIdsWithParticipations))
     );
   }
@@ -46,8 +46,8 @@ export class EventService {
   }
 
   private getEventsWithParticipatingUserIds(eventIdsWithParticipatingUserIds: [string, string[]][]): Observable<Event[]> {
-    return zip(
-      ...eventIdsWithParticipatingUserIds.map(eventIdWithParticipatingUserIds => this.getEvent(eventIdWithParticipatingUserIds))
+    return combineLatest(
+      eventIdsWithParticipatingUserIds.map(eventIdWithParticipatingUserIds => this.getEvent(eventIdWithParticipatingUserIds))
     );
   }
 
